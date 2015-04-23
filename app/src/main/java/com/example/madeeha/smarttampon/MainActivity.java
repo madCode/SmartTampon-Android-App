@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -20,6 +21,8 @@ import android.widget.TextView;
 
 import com.example.madeeha.smarttampon.R;
 
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 public class MainActivity extends Activity implements BluetoothAdapter.LeScanCallback {
@@ -272,20 +275,35 @@ public class MainActivity extends Activity implements BluetoothAdapter.LeScanCal
         sendValueButton.setEnabled(connected);
     }
 
-    private void addData(byte[] data) {
+    private void addData(byte[] dataFlipped) {
+        byte[] data = FlipData(dataFlipped);
         View view = getLayoutInflater().inflate(android.R.layout.simple_list_item_2, dataLayout, false);
 
         TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-        text1.setText(HexAsciiHelper.bytesToHex(data));
+//        String hex = HexAsciiHelper.bytesToHex(data);
 
-        String ascii = HexAsciiHelper.bytesToAsciiMaybe(data);
-        if (ascii != null) {
-            TextView text2 = (TextView) view.findViewById(android.R.id.text2);
-            text2.setText(ascii);
-        }
+        BigInteger bi = new BigInteger(data);
+        text1.setText(bi.toString());
 
         dataLayout.addView(
                 view, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+
+    private byte[] FlipData(byte[] data){
+        int len = data.length;
+        byte[] newData = new byte[len];
+        for (int i=0; i < len; i++){
+            newData[len-i-1]= data[i];
+        }
+        return newData;
+    }
+
+    private String toBinary( byte[] bytes )
+    {
+        StringBuilder sb = new StringBuilder(bytes.length * Byte.SIZE);
+        for( int i = 0; i < Byte.SIZE * bytes.length; i++ )
+            sb.append((bytes[i / Byte.SIZE] << i % Byte.SIZE & 0x80) == 0 ? '0' : '1');
+        return sb.toString();
     }
 
     @Override

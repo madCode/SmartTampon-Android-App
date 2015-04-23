@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,7 +55,7 @@ public class EditData extends LinearLayout{
     }
 
     public boolean inHexMode() {
-        return (hexToggle != null) && hexToggle.isChecked();
+        return false;//(hexToggle != null) && hexToggle.isChecked();
     }
 
     public byte[] getData() {
@@ -71,10 +72,14 @@ public class EditData extends LinearLayout{
         if (inHexMode()) {
             text = HexAsciiHelper.bytesToHex(data);
         } else {
-            text = HexAsciiHelper.bytesToAsciiMaybe(data);
-            if (text == null) {
+             //HexAsciiHelper.bytesToAsciiMaybe(data);
+            if (data == null || data.length == 0) {
                 text = "";
+            } else {
+                ByteBuffer buffer = ByteBuffer.wrap(data);
+                text = String.valueOf(buffer.getFloat());
             }
+
         }
         dataEdit.setText(text);
     }
