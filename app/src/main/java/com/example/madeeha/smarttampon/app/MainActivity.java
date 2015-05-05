@@ -108,7 +108,7 @@ public class MainActivity extends Activity implements BluetoothAdapter.LeScanCal
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_layout);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
