@@ -101,7 +101,7 @@
             android:id="@+id/textView6" />
 
         <view
-            class="com.example.madeeha.smarttampon.EditData"
+            class="com.example.madeeha.smarttampon.app.EditData"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/value" />

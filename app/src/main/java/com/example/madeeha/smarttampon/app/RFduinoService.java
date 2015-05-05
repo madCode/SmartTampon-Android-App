@@ -21,7 +21,7 @@
  *
  */
 
-package com.example.madeeha.smarttampon;
+package com.example.madeeha.smarttampon.app;
 
 import android.Manifest;
 import android.app.Service;

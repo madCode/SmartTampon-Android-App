@@ -10,4 +10,11 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     public ApplicationTest() {
         super(Application.class);
     }
+
+    /** TESTS
+     * are all database functions working properly?
+     * are all Day functions working properly?
+     * are all PeriodChart functions working properly?
+     */
+
 }

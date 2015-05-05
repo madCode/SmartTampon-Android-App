@@ -1,4 +1,4 @@
-package com.example.madeeha.smarttampon;
+package com.example.madeeha.smarttampon.app;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -11,7 +11,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import com.example.madeeha.smarttampon.R;
 
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.util.UUID;
 
 public class MainActivity extends Activity implements BluetoothAdapter.LeScanCallback {
@@ -283,6 +281,7 @@ public class MainActivity extends Activity implements BluetoothAdapter.LeScanCal
 //        String hex = HexAsciiHelper.bytesToHex(data);
 
         BigInteger bi = new BigInteger(data);
+        //TODO: send data to chart?
         text1.setText(bi.toString());
 
         dataLayout.addView(

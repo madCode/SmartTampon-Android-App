@@ -1,4 +1,4 @@
-package com.example.madeeha.smarttampon;
+package com.example.madeeha.smarttampon.app;
 
 import android.content.Context;
 import android.view.LayoutInflater;
