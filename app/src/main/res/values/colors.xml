@@ -3,4 +3,5 @@
     <color name="white">#ffffff</color>
     <color name="green">#00ff00</color>
     <color name="blue">#0000ff</color>
+    <color name="periodRed">#ff4848</color>
 </resources>

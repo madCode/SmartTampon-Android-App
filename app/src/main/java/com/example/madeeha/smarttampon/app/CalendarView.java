@@ -18,12 +18,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @SuppressLint("SimpleDateFormat")
 public class CalendarView extends FragmentActivity {
     private boolean undo = false;
     private CaldroidFragment caldroidFragment;
     private CaldroidFragment dialogCaldroidFragment;
+
+    private FlowDatabase db;
 
     private void setCustomResourceForDates() {
         Calendar cal = Calendar.getInstance();
@@ -51,6 +55,12 @@ public class CalendarView extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar_view);
+
+
+
+        db = new FlowDatabase(getApplicationContext());
+
+        setUpDatabase();
 
         final SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
 
@@ -92,7 +102,7 @@ public class CalendarView extends FragmentActivity {
             caldroidFragment.setArguments(args);
         }
 
-        setCustomResourceForDates();
+//        setCustomResourceForDates();
 
         // Attach to the activity
         FragmentTransaction t = getSupportFragmentManager().beginTransaction();
@@ -112,6 +122,7 @@ public class CalendarView extends FragmentActivity {
             @Override
             public void onChangeMonth(int month, int year) {
                 String text = "month: " + month + " year: " + year;
+                showPeriodDays(year,month);
                 Toast.makeText(getApplicationContext(), text,
                         Toast.LENGTH_SHORT).show();
             }
@@ -224,39 +235,6 @@ public class CalendarView extends FragmentActivity {
             }
         });
 
-        Button showDialogButton = (Button) findViewById(R.id.show_dialog_button);
-
-        final Bundle state = savedInstanceState;
-        showDialogButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // Setup caldroid to use as dialog
-                dialogCaldroidFragment = new CaldroidFragment();
-                dialogCaldroidFragment.setCaldroidListener(listener);
-
-                // If activity is recovered from rotation
-                final String dialogTag = "CALDROID_DIALOG_FRAGMENT";
-                if (state != null) {
-                    dialogCaldroidFragment.restoreDialogStatesFromKey(
-                            getSupportFragmentManager(), state,
-                            "DIALOG_CALDROID_SAVED_STATE", dialogTag);
-                    Bundle args = dialogCaldroidFragment.getArguments();
-                    if (args == null) {
-                        args = new Bundle();
-                        dialogCaldroidFragment.setArguments(args);
-                    }
-                } else {
-                    // Setup arguments
-                    Bundle bundle = new Bundle();
-                    // Setup dialogTitle
-                    dialogCaldroidFragment.setArguments(bundle);
-                }
-
-                dialogCaldroidFragment.show(getSupportFragmentManager(),
-                        dialogTag);
-            }
-        });
     }
 
     /**
@@ -275,6 +253,83 @@ public class CalendarView extends FragmentActivity {
             dialogCaldroidFragment.saveStatesToKey(outState,
                     "DIALOG_CALDROID_SAVED_STATE");
         }
+    }
+
+    private void showPeriodDays(int year,int month){
+        int key = year*10000 + month*100 + 1;
+        int[] res = db.getMonthData(key);
+        if (res[0] != -1){
+            int period_len = res[1];
+            Day closestDay;
+            if (month == 12){
+                closestDay = db.getClosestPeriodStartDay(new Day(year-1,1,1));
+            } else {
+                closestDay = db.getClosestPeriodStartDay(new Day(year,month+1,1));
+            }
+            colorPeriodDays(closestDay,period_len);
+        }
+    }
+
+    private void colorPeriodDays(Day d,int len) {
+        Calendar cal = Calendar.getInstance();
+        int year = d.getDate().getYear();
+        int month = d.getDate().getMonth()-1;
+        int date = d.getDate().getDate();
+        cal.set(year,month,date);
+
+        List<Date> periodDays = new LinkedList<>();
+        periodDays.add(cal.getTime());
+
+        for (int i=1;i<len;i++){
+            cal.add(Calendar.DATE,1);
+            periodDays.add(cal.getTime());
+        }
+
+
+        if (caldroidFragment != null) {
+            for (int i=0; i<len; i++){
+                Date colorDate = periodDays.get(i);
+                caldroidFragment.setBackgroundResourceForDate(R.color.periodRed, colorDate);
+                caldroidFragment.setTextColorForDate(R.color.white, colorDate);
+
+            }
+        }
+    }
+
+    private void setUpDatabase(){
+        db.deleteAll();
+
+        int jan = 20150101;
+        int feb = 20150201;
+        int mar = 20150301;
+        int apr = 20150401;
+        int may = 20150501;
+        db.addMonthData(jan,8,25);
+        db.addMonthData(feb,7,40);
+        db.addMonthData(mar,7,26);
+        db.addMonthData(apr,9,33);
+        db.addMonthData(may,8,0);
+
+        Day janD = new Day(2015,1,1);
+        janD.setOnPeriod(2);
+
+        Day febD = new Day(2015,1,26);
+        febD.setOnPeriod(2);
+
+        Day marchD = new Day(2015,3,6);
+        marchD.setOnPeriod(2);
+
+        Day aprilD = new Day(2015,4,1);
+        aprilD.setOnPeriod(2);
+
+        Day mayD = new Day(2015,5,4);
+        mayD.setOnPeriod(2);
+
+        db.addDay(janD);
+        db.addDay(febD);
+        db.addDay(marchD);
+        db.addDay(aprilD);
+        db.addDay(mayD);
     }
 
 }
