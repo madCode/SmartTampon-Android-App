@@ -45,6 +45,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".app.Chart"
+            android:label="@string/title_activity_chart" >
+        </activity>
     </application>
 
 </manifest>

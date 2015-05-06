@@ -40,7 +40,7 @@ public class FlowDatabase extends SQLiteOpenHelper {
     private static final String[] COLUMNS_PERIOD = {KEY_PERIOD_ID, KEY_PERIOD_LEN, KEY_CYCLE_LEN};
     
     // Database Version
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     // Database Name
     private static final String DATABASE_NAME = "FlowDB";
 
@@ -196,7 +196,7 @@ public class FlowDatabase extends SQLiteOpenHelper {
         List<Day> flow = new LinkedList<>();
 
         // 1. build the query
-        String query = "SELECT  * FROM " + TABLE_FLOW + " WHERE " + KEY_ID + " <= " + end
+        String query = "SELECT  * FROM " + TABLE_FLOW + " WHERE " + KEY_ID + " < " + end
                 + " AND " + KEY_ID + " >= " + start+ " AND "+ KEY_ONPERIOD + " >= 1";
         String log = "getAllPeriodDays()";
 
