@@ -7,13 +7,26 @@ import android.view.MenuItem;
 
 import com.example.madeeha.smarttampon.R;
 
+import java.util.Calendar;
+
 public class Chart extends ActionBarActivity {
+
+    private FlowDatabase db;
+    private madeehaDate showDay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart);
 
+        db = new FlowDatabase(getApplicationContext());
+        Calendar c = Calendar.getInstance();
+        try {
+            showDay = new madeehaDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, 1);
+            //showChart(date);
+        } catch (Exception e){
+
+        }
 
     }
 
