@@ -13,7 +13,10 @@ import java.util.GregorianCalendar;
 public class Day {
 
     private madeehaDate date;
-    private Time timeFull;
+    public int startTime = -1;
+    public int fillTime = -1;
+    public int totalFillTime = 0;
+    public int numTimesFilled = 0;
 
     //representing 0= not on period, 1=on period, 2=period started today
     private int onPeriod = 0;
@@ -116,13 +119,6 @@ public class Day {
         }
     }
 
-    public void setTimeFull(Time timeFull) {
-        this.timeFull = timeFull;
-    }
-
-    public Time getTimeFull() {
-        return timeFull;
-    }
 
     public madeehaDate getDate() {
         return date;
@@ -156,12 +152,14 @@ public class Day {
         //TODO: run predictive algo
     }
 
-    public long getTimeFullLong() {
-        if (this.timeFull == null){
+    public double getAverageFillTime(){
+        if (numTimesFilled > 0) {
+            return totalFillTime / numTimesFilled;
+        } else {
             return -1;
         }
-        return this.timeFull.getTime();
     }
+
 
 //    public static Date StringToDate(String s) {
 //        return new Date(Long.parseLong(s));

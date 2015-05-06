@@ -22,7 +22,11 @@ public class FlowDatabase extends SQLiteOpenHelper {
 
     // Days Table Columns names
     private static final String KEY_ID = "id";
-    private static final String KEY_TIME = "time";
+    private static final String KEY_TIME = "startTime";
+    private static final String KEY_END_TIME = "endTime";
+    private static final String KEY_NUM_FILLED = "totalFill";
+    private static final String KEY_TOTAL_FILL = "numFill";
+
     private static final String KEY_ONPERIOD = "onPeriod";
     private static final String KEY_FERT = "fertile";
 
@@ -40,13 +44,16 @@ public class FlowDatabase extends SQLiteOpenHelper {
     private static final String[] COLUMNS_PERIOD = {KEY_PERIOD_ID, KEY_PERIOD_LEN, KEY_CYCLE_LEN};
     
     // Database Version
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     // Database Name
     private static final String DATABASE_NAME = "FlowDB";
 
     private final String CREATE_FLOW_TABLE = "CREATE TABLE "+ TABLE_FLOW +" ( " +
             "id INTEGER PRIMARY KEY, " +
-            "time INTEGER, "+
+            "startTime INTEGER, "+
+            "endTime INTEGER, "+
+            "totalFill INTEGER, "+
+            "numFill INTEGER, "+
             "onPeriod INTEGER, "+
             "fertile INTEGER )";
 
@@ -95,9 +102,12 @@ public class FlowDatabase extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         Log.i("addDay","day key = " + day.getDBkey());
         values.put(KEY_ID, day.getDBkey());
-        if (day.getTimeFullLong() != -1){
-            values.put(KEY_TIME, day.getTimeFullLong());
-        }
+
+        values.put(KEY_TIME, day.startTime);
+        values.put(KEY_END_TIME, day.fillTime);
+        values.put(KEY_TOTAL_FILL, day.totalFillTime);
+        values.put(KEY_NUM_FILLED, day.numTimesFilled);
+
         values.put(KEY_ONPERIOD, day.isOnPeriodInt());
         values.put(KEY_FERT, day.isFertileInt());
 
@@ -140,15 +150,14 @@ public class FlowDatabase extends SQLiteOpenHelper {
             int month=Integer.parseInt(cursor.getString(0).substring(4,6));
             int day=Integer.parseInt(cursor.getString(0).substring(6,8));
             newDay = new Day(year,month,day);
-            if (!cursor.isNull(1)) {
-                newDay.setTimeFull(new Time(Long.parseLong(cursor.getString(1))));
-                if (!cursor.isNull(2)) {
-                    newDay.setOnPeriod(Integer.parseInt(cursor.getString(2)));
-                    if (!cursor.isNull(3)) {
-                        newDay.setFertile(Integer.parseInt(cursor.getString(3)));
-                    }
-                }
-            }
+            newDay.numTimesFilled = Integer.parseInt(cursor.getString(4));
+            newDay.fillTime = Integer.parseInt(cursor.getString(2));
+            newDay.startTime = Integer.parseInt(cursor.getString(1));
+            newDay.totalFillTime = Integer.parseInt(cursor.getString(3));
+
+            newDay.setOnPeriod(Integer.parseInt(cursor.getString(5)));
+            newDay.setFertile(Integer.parseInt(cursor.getString(6)));
+
             Log.d("getDay(" + id + ")", newDay.toString());
         }
 
@@ -212,7 +221,12 @@ public class FlowDatabase extends SQLiteOpenHelper {
         // 2. create ContentValues to add key "column"/value
         ContentValues values = new ContentValues();
         values.put(KEY_ID, d.getDBkey());
-        values.put(KEY_TIME, d.getTimeFullLong());
+
+        values.put(KEY_TIME, d.startTime);
+        values.put(KEY_END_TIME, d.fillTime);
+        values.put(KEY_TOTAL_FILL, d.totalFillTime);
+        values.put(KEY_NUM_FILLED, d.numTimesFilled);
+
         values.put(KEY_ONPERIOD, d.isOnPeriodInt());
         values.put(KEY_FERT, d.isFertileInt());
 
@@ -278,15 +292,15 @@ public class FlowDatabase extends SQLiteOpenHelper {
                     int month=Integer.parseInt(cursor.getString(0).substring(4,6));
                     int day=Integer.parseInt(cursor.getString(0).substring(6,8));
                     newDay = new Day(year,month,day);
-                    if (!cursor.isNull(1)) {
-                        newDay.setTimeFull(new Time(Long.parseLong(cursor.getString(1))));
-                        if (!cursor.isNull(2)) {
-                            newDay.setOnPeriod(Integer.parseInt(cursor.getString(2)));
-                            if (!cursor.isNull(3)) {
-                                newDay.setFertile(Integer.parseInt(cursor.getString(3)));
-                            }
-                        }
-                    }
+                    newDay.numTimesFilled = Integer.parseInt(cursor.getString(4));
+                    newDay.fillTime = Integer.parseInt(cursor.getString(2));
+                    newDay.startTime = Integer.parseInt(cursor.getString(1));
+                    newDay.totalFillTime = Integer.parseInt(cursor.getString(3));
+
+                    newDay.setOnPeriod(Integer.parseInt(cursor.getString(5)));
+                    newDay.setFertile(Integer.parseInt(cursor.getString(6)));
+
+                    Log.d("getAll()", newDay.toString());
                 }
 
                 // Add day to flow

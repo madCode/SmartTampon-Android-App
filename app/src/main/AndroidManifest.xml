@@ -39,15 +39,16 @@
         <activity
             android:name=".app.HomePage"
             android:label="@string/title_activity_home_page" >
+
+        </activity>
+        <activity
+            android:name=".app.Chart"
+            android:label="@string/title_activity_chart" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".app.Chart"
-            android:label="@string/title_activity_chart" >
         </activity>
     </application>
 
