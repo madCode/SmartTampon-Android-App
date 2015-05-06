@@ -7,4 +7,6 @@
     <string name="undo">Undo</string>
     <string name="customize">Customize</string>
     <string name="show_dialog">Show Dialog</string>
+    <string name="title_activity_home_page">HomePage</string>
+    <string name="approx_time">approximate time until \n tampon needs to be changed</string>
 </resources>
