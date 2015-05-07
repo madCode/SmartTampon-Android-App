@@ -13,12 +13,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.view.View.OnClickListener;
+import android.os.CountDownTimer;
 
 import com.example.madeeha.smarttampon.R;
 
 public class HomePage extends ActionBarActivity implements OnClickListener {
 
     private Button b;
+    private CountDownTimer countDownTimer;
+    private boolean timerHasStarted = false;
+    private Button startB;
+    public TextView text;
+    private final long startTime = 18000 * 1000;
+    private final long interval = 1 * 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,20 +38,54 @@ public class HomePage extends ActionBarActivity implements OnClickListener {
 
         b = (Button) findViewById(R.id.button);
         b.setOnClickListener(this);
+
+        startB = (Button) this.findViewById(R.id.newtamponbutton);
+        startB.setOnClickListener(this);
+        text = (TextView) this.findViewById(R.id.timer_font);
+        countDownTimer = new MyCountDownTimer(startTime, interval);
+        text.setText(text.getText() + String.valueOf(startTime / 1000));
     }
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent();
-        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        Notification noti = new Notification.Builder(this)
-                .setTicker("Your tampon is full!")
-                .setContentTitle("my.Flow")
-                .setContentText("Your tampon is full! Time to change your tampon!")
-                .setSmallIcon(R.drawable.calendarbutton)
-                .setContentIntent(pIntent).build();
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(0, noti);
+        if (v == b) {
+            Intent intent = new Intent();
+            PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+            Notification noti = new Notification.Builder(this)
+                    .setTicker("Your tampon is full!")
+                    .setContentTitle("my.Flow")
+                    .setContentText("Your tampon is full! Time to change your tampon!")
+                    .setSmallIcon(R.drawable.calendarbutton)
+                    .setContentIntent(pIntent).build();
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.notify(0, noti);
+        }
+
+        if (v == startB) {
+            if (!timerHasStarted) {
+                countDownTimer.start();
+                timerHasStarted = true;
+            } else {
+                countDownTimer.cancel();
+                timerHasStarted = false;
+            }
+        }
+    }
+
+    public class MyCountDownTimer extends CountDownTimer {
+        public MyCountDownTimer(long startTime, long interval) {
+            super(startTime, interval);
+        }
+
+        @Override
+        public void onFinish() {
+            text.setText("Tampon is full!");
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            text.setText("" + millisUntilFinished / 1000);
+        }
     }
 
     @Override

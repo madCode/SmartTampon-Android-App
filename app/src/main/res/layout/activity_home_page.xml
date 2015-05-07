@@ -12,7 +12,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="50sp"
-        android:text="4:45"
         android:id="@+id/timer_font"
         android:textColor="@color/periodRed"
         android:layout_alignParentTop="true"
@@ -62,22 +61,5 @@
         android:id="@+id/newtamponbutton"
         android:background="@drawable/newtamponbuttonhome"
         android:gravity="top|left" />
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" >
-
-        <Button
-            android:layout_width="200dp"
-            android:layout_height="55dp"
-            android:text=""
-            android:id="@+id/periodoverbutton"
-            android:background="@drawable/periodoverbuttonhome"
-            android:layout_gravity="bottom" />
-
-    </LinearLayout>
 
 </RelativeLayout>
