@@ -24,7 +24,7 @@ public class HomePage extends ActionBarActivity implements OnClickListener {
     private boolean timerHasStarted = false;
     private Button startB;
     public TextView text;
-    private final long startTime = 18000 * 1000;
+    private final long startTime = 30 * 1000;
     private final long interval = 1 * 1000;
 
     @Override
