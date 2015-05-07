@@ -30,7 +30,7 @@ public class FlowDatabase extends SQLiteOpenHelper {
     private static final String KEY_ONPERIOD = "onPeriod";
     private static final String KEY_FERT = "fertile";
 
-    private static final String[] COLUMNS = {KEY_ID,KEY_TIME,KEY_ONPERIOD,KEY_FERT};
+    private static final String[] COLUMNS = {KEY_ID,KEY_TIME,KEY_END_TIME,KEY_NUM_FILLED,KEY_TOTAL_FILL,KEY_ONPERIOD,KEY_FERT};
 
 
     // Days table name
@@ -44,7 +44,7 @@ public class FlowDatabase extends SQLiteOpenHelper {
     private static final String[] COLUMNS_PERIOD = {KEY_PERIOD_ID, KEY_PERIOD_LEN, KEY_CYCLE_LEN};
     
     // Database Version
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     // Database Name
     private static final String DATABASE_NAME = "FlowDB";
 
@@ -119,6 +119,10 @@ public class FlowDatabase extends SQLiteOpenHelper {
         // 4. close
         db.close();
     }
+
+//    public boolean contains(int id) {
+//
+//    }
 
     public Day getDay(int id){
 

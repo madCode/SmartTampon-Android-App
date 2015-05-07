@@ -95,6 +95,7 @@ public class Chart extends ActionBarActivity {
 
     private void showChart(madeehaDate start, madeehaDate end) {
         List<Day> periodDays = db.getAllPeriodDaysInDayRange(start.getIntRepresentation(), end.getIntRepresentation());
+        //Day check = db.getDay(20150507);
         XYSeriesRenderer renderer = new XYSeriesRenderer();
         renderer.setLineWidth(2);
 
@@ -241,7 +242,7 @@ public class Chart extends ActionBarActivity {
         mayD.totalFillTime = 5;
         mayD.numTimesFilled = 1;
 
-        for (int i=1;i<9;i++){
+        for (int i=1;i<3;i++){
             Day p = new Day(2015,5,4+i);
             p.setOnPeriod(true);
             p.totalFillTime = 5;

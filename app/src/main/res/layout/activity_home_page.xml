@@ -24,7 +24,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/approx_time"
-        android:id="@+id/timer_font"
         android:textColor="@color/white"
         android:textSize="15sp"
         android:gravity="center"
@@ -46,7 +45,8 @@
         android:layout_height="70dp"
         android:layout_marginLeft="230dp"
         android:layout_marginTop="280dp"
-        android:background="@drawable/statsbuttonhome" />
+        android:background="@drawable/statsbuttonhome"
+        android:onClick="gotoChart"/>
 
     <Button
         android:layout_width="130dp"
@@ -65,47 +65,47 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true" />
 
-        <ScrollView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/scrollView"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-        >
+        <!--<ScrollView-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/scrollView"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:layout_alignParentStart="true"-->
+        <!-->-->
 
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:baselineAligned="true"
->
+        <!--<LinearLayout-->
+            <!--android:orientation="vertical"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+            <!--android:paddingRight="@dimen/activity_horizontal_margin"-->
+            <!--android:paddingTop="@dimen/activity_vertical_margin"-->
+            <!--android:paddingBottom="@dimen/activity_vertical_margin"-->
+            <!--android:focusable="true"-->
+            <!--android:focusableInTouchMode="true"-->
+            <!--android:baselineAligned="true"-->
+<!-->-->
 
-            <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Data:"
-            android:id="@+id/textView8" />
+            <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Data:"-->
+            <!--android:id="@+id/textView8" />-->
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/dataLayout">
+        <!--<LinearLayout-->
+            <!--android:orientation="vertical"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:id="@+id/dataLayout">-->
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"></LinearLayout>
-        </LinearLayout>
-            </LinearLayout>
-        </ScrollView>
+            <!--<LinearLayout-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"></LinearLayout>-->
+        <!--</LinearLayout>-->
+            <!--</LinearLayout>-->
+        <!--</ScrollView>-->
 
         <Button
             android:layout_width="50dp"

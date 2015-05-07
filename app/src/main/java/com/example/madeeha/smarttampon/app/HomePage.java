@@ -28,10 +28,13 @@ import android.widget.Toast;
 import com.example.madeeha.smarttampon.R;
 
 import java.math.BigInteger;
+import java.util.Calendar;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class HomePage extends ActionBarActivity implements OnClickListener, BluetoothAdapter.LeScanCallback {
+
+    private FlowDatabase db;
 
     private Button b;
     private CountDownTimer countDownTimer;
@@ -41,6 +44,8 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
     private long startTime;
     private long interval;
     private long newTime, savedTime;
+
+    private Day today;
 
 
     // State machine
@@ -121,6 +126,11 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
+        db = new FlowDatabase(getApplicationContext());
+
+        Calendar c = Calendar.getInstance();
+        today = new Day(c.get(Calendar.YEAR),c.get(Calendar.MONTH)+1,c.get(Calendar.DATE));
+
         TextView txtTimer = (TextView) findViewById(R.id.timer_font);
         Typeface tfTimer = Typeface.createFromAsset(getAssets(), "fonts/Quicksand-Regular.otf");
         txtTimer.setTypeface(tfTimer);
@@ -181,6 +191,8 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
         }
 
         if (v == newTampon) {
+            int worked = -1;
+            today.setOnPeriod(true);
             if (!timerHasStarted) {
                 countDownTimer = new MyCountDownTimer(startTime, interval);
                 countDownTimer.start();
@@ -190,6 +202,16 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
                 timerHasStarted = false;
                 newTime = savedTime;
                 startTime = newTime;
+                double t = 8-TimeUnit.MILLISECONDS.toHours(newTime);
+                today.totalFillTime+= t;
+                today.numTimesFilled+=1;
+
+                if (db.getDay(today.getDBkey()) != null) {
+                    worked = db.updateDay(today);
+                    int a = 0;
+                } else {
+                    db.addDay(today);
+                }
             }
         }
     }
@@ -317,14 +339,25 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
     }
 
     private void addData(byte[] dataFlipped) {
-        byte[] data = FlipData(dataFlipped);
-        View view = getLayoutInflater().inflate(android.R.layout.simple_list_item_2, dataLayout, false);
+        countDownTimer.cancel();
+        timerHasStarted = false;
+        newTime = savedTime;
+        startTime = newTime;
+        today.totalFillTime+= TimeUnit.MILLISECONDS.toHours(newTime);
+        today.numTimesFilled+=1;
 
-        TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-//        String hex = HexAsciiHelper.bytesToHex(data);
-
-        BigInteger bi = new BigInteger(data);
-        //TODO: send data to chart?
+        if (db.getDay(today.getDBkey()) != null) {
+            db.updateDay(today);
+        } else {
+            db.addDay(today);
+        }
+//        byte[] data = FlipData(dataFlipped);
+//        View view = getLayoutInflater().inflate(android.R.layout.simple_list_item_2, dataLayout, false);
+//
+//        TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+////        String hex = HexAsciiHelper.bytesToHex(data);
+//
+//        BigInteger bi = new BigInteger(data);
 //        text1.setText(bi.toString());
 //
 //        dataLayout.addView(
@@ -363,6 +396,11 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
                 connect();
             }
         });
+    }
+
+    public void gotoChart(View v){
+        Intent intent = new Intent(this, Chart.class);
+        startActivity(intent);
     }
 
 }

@@ -35,15 +35,15 @@ public class Day {
         }
     }
 
-    public Day(madeehaDate d){
-        if (d.isValid()) {
-            this.date = d;
-            if (date.isAfter(madeehaDate.today())) {
-                PredictOnPeriod(this);
-                PredictFertility(this);
-            }
-        }
-    }
+//    public Day(madeehaDate d){
+//        if (d.isValid()) {
+//            this.date = d;
+//            if (date.isAfter(madeehaDate.today())) {
+//                PredictOnPeriod(this);
+//                PredictFertility(this);
+//            }
+//        }
+//    }
 
 
     /**
