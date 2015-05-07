@@ -1,13 +1,14 @@
 package com.example.madeeha.smarttampon.app;
 
 import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.madeeha.smarttampon.R;
 
@@ -41,17 +42,63 @@ public class Chart extends ActionBarActivity {
             c.add(Calendar.MONTH,1);
             madeehaDate nextMonth = new madeehaDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, 1);
             showChart(showDay, nextMonth);
+            updateTitle(showDay);
         } catch (Exception e){
 
         }
 
     }
 
+    private void updateTitle(madeehaDate currDate) {
+        TextView t = (TextView)findViewById(R.id.title);
+        TextView subt = (TextView)findViewById(R.id.subtitle);
+        Typeface tfTimer = Typeface.createFromAsset(getAssets(), "fonts/Quicksand-Regular.otf");
+        t.setTypeface(tfTimer);
+        subt.setTypeface(tfTimer);
+        t.setText("Average Flow in "+getMonth(currDate));
+        t.setTextSize(20);
+        subt.setText("(hours it takes for tampon to fill)");
+        subt.setTextSize(10);
+
+    }
+
+    private String getMonth(madeehaDate currDate) {
+        switch(currDate.getMonth()){
+            case 1:
+                return "January";
+            case 2:
+                return "February";
+            case 3:
+                return "March";
+            case 4:
+                return "April";
+            case 5:
+                return "May";
+            case 6:
+                return "June";
+            case 7:
+                return "July";
+            case 8:
+                return "August";
+            case 9:
+                return "September";
+            case 10:
+                return "October";
+            case 11:
+                return "November";
+            case 12:
+                return "December";
+            default:
+                return "Not a Month";
+        }
+    }
+
     private void showChart(madeehaDate start, madeehaDate end) {
         List<Day> periodDays = db.getAllPeriodDaysInDayRange(start.getIntRepresentation(), end.getIntRepresentation());
         XYSeriesRenderer renderer = new XYSeriesRenderer();
         renderer.setLineWidth(2);
-        renderer.setColor(Color.RED);
+
+        renderer.setColor(getResources().getColor(R.color.periodRed));
         // Include low and max value
         renderer.setDisplayBoundingPoints(true);
         // we add point markers
@@ -80,6 +127,7 @@ public class Chart extends ActionBarActivity {
         // Now we create the renderer
 
 
+        mRenderer.setTextTypeface(Typeface.createFromAsset(getAssets(), "fonts/Quicksand-Regular.otf"));
         mRenderer.addSeriesRenderer(renderer);
 
         // We want to avoid black border
@@ -88,12 +136,9 @@ public class Chart extends ActionBarActivity {
         mRenderer.setPanEnabled(false, false);
         mRenderer.setYAxisMax(10);
         mRenderer.setYAxisMin(0);
-        mRenderer.setChartTitleTextSize(30);
-        mRenderer.setLabelsTextSize(20);
-        mRenderer.setLabelsColor(Color.DKGRAY);
-        mRenderer.setXLabelsColor(Color.DKGRAY);
-        mRenderer.setYLabelsColor(0,Color.DKGRAY);
+        mRenderer.setLabelsTextSize(30);
         mRenderer.setYLabelsPadding((float)20);
+        mRenderer.setYLabelsVerticalPadding((float)-20);
 
 //        mRenderer.setXLabelsAlign(Paint.Align.RIGHT);
 //        mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
@@ -102,7 +147,8 @@ public class Chart extends ActionBarActivity {
 
         mRenderer.setZoomLimits(new double[] { 0, 10, 0, 10 });
 
-        mRenderer.setChartTitle("Flow (avg. hours before tampon fills)");
+//        mRenderer.setChartTitle("Flow (avg. hours before tampon fills)");
+        mRenderer.setBackgroundColor(getResources().getColor(R.color.background));
         mRenderer.setShowGrid(true); // we show the grid
         //mRenderer.setYLabelsColor(1,Color.BLACK);
 
