@@ -61,7 +61,8 @@
         android:text=""
         android:id="@+id/newtamponbutton"
         android:background="@drawable/newtamponbuttonhome"
-        android:gravity="top|left" />
+        android:gravity="top|left"
+        />
 
     <LinearLayout
         android:orientation="horizontal"
