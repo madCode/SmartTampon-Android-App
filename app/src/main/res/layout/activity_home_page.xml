@@ -49,21 +49,21 @@
         android:background="@drawable/statsbuttonhome" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Notify Me"
-        android:id="@+id/button"
-        android:layout_marginTop="180dp"
-        android:layout_alignEnd="@+id/timer_font" />
-
-    <Button
         android:layout_width="130dp"
         android:layout_height="40dp"
         android:text=""
         android:id="@+id/newtamponbutton"
         android:background="@drawable/newtamponbuttonhome"
-        android:gravity="top|left"
-        />
+        android:gravity="top|left" />
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:text=""
+        android:id="@+id/connectbutton"
+        android:background="@drawable/connectbuttonhome"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
 
         <ScrollView
             android:layout_width="fill_parent"
@@ -87,7 +87,7 @@
             android:baselineAligned="true"
 >
 
-        <TextView
+            <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Data:"
@@ -106,5 +106,15 @@
         </LinearLayout>
             </LinearLayout>
         </ScrollView>
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:text=""
+            android:id="@+id/button"
+            android:layout_gravity="right"
+            android:background="@drawable/notificationbutton"
+            android:layout_above="@+id/scrollView"
+            android:layout_centerHorizontal="true" />
 
     </RelativeLayout>

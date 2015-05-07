@@ -29,17 +29,18 @@ import com.example.madeeha.smarttampon.R;
 
 import java.math.BigInteger;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class HomePage extends ActionBarActivity implements OnClickListener, BluetoothAdapter.LeScanCallback {
 
     private Button b;
     private CountDownTimer countDownTimer;
     private boolean timerHasStarted = false;
-    private Button startB;
+    private Button newTampon;
     public TextView text;
-    private final long startTime = 2880 * 1000;
-    private final long interval = 1 * 1000;
-    private long AvgTime;
+    private long startTime;
+    private long interval;
+    private long newTime, savedTime;
 
 
     // State machine
@@ -124,20 +125,27 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
         Typeface tfTimer = Typeface.createFromAsset(getAssets(), "fonts/Quicksand-Regular.otf");
         txtTimer.setTypeface(tfTimer);
 
+        startTime = 28800 * 1000;
+        interval = 1 * 1000;
+
         b = (Button) findViewById(R.id.button);
         b.setOnClickListener(this);
+
+        newTampon = (Button) findViewById(R.id.newtamponbutton);
+        newTampon.setOnClickListener(this);
+
+        text = (TextView) findViewById(R.id.timer_font);
+        countDownTimer = new MyCountDownTimer(startTime, interval);
+        text.setText(text.getText() + String.valueOf(startTime / 1000));
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Find Device
-        scanButton = (Button) this.findViewById(R.id.newtamponbutton);
+        scanButton = (Button) this.findViewById(R.id.connectbutton);
         connectionStatusText = (TextView) findViewById(R.id.connectionStatus);
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                text = (TextView) findViewById(R.id.timer_font);
-                countDownTimer = new MyCountDownTimer(startTime, interval);
-                text.setText(text.getText() + String.valueOf(startTime / 1000));
                 scanStarted = true;
                 bluetoothAdapter.startLeScan(
                         new UUID[]{ RFduinoService.UUID_SERVICE },
@@ -172,13 +180,16 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
             notificationManager.notify(0, noti);
         }
 
-        if (v == startB) {
+        if (v == newTampon) {
             if (!timerHasStarted) {
+                countDownTimer = new MyCountDownTimer(startTime, interval);
                 countDownTimer.start();
                 timerHasStarted = true;
             } else {
                 countDownTimer.cancel();
                 timerHasStarted = false;
+                newTime = savedTime;
+                startTime = newTime;
             }
         }
     }
@@ -195,7 +206,15 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
 
         @Override
         public void onTick(long millisUntilFinished) {
-            text.setText("" + millisUntilFinished / 1000);
+            String time = String.format("%d hr, %d min, %d sec",
+                    TimeUnit.MILLISECONDS.toHours(millisUntilFinished),
+                    TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) -
+                            TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished)),
+                    TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
+            );
+            text.setText(time);
+            savedTime = millisUntilFinished;
         }
     }
 
