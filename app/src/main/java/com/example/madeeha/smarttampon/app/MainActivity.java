@@ -110,6 +110,8 @@ public class MainActivity extends Activity implements BluetoothAdapter.LeScanCal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        getActionBar().hide();
+
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Find Device

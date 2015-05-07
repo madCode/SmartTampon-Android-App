@@ -1,5 +1,7 @@
 package com.example.madeeha.smarttampon.app;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -32,7 +34,7 @@ import java.util.Calendar;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class HomePage extends ActionBarActivity implements OnClickListener, BluetoothAdapter.LeScanCallback {
+public class HomePage extends Activity implements OnClickListener, BluetoothAdapter.LeScanCallback {
 
     private FlowDatabase db;
 
@@ -125,6 +127,8 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
+//        ActionBar actionBar = getActionBar().hide();
+//        getActionBar().hide();
 
         db = new FlowDatabase(getApplicationContext());
 

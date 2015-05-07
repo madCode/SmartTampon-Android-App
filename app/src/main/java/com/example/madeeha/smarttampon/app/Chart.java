@@ -1,5 +1,6 @@
 package com.example.madeeha.smarttampon.app;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.app.ActionBarActivity;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class Chart extends ActionBarActivity {
+public class Chart extends Activity {
 
     private FlowDatabase db;
     private madeehaDate showDay;
@@ -33,6 +34,8 @@ public class Chart extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart);
+//        getActionBar().hide();
+
 
         db = new FlowDatabase(getApplicationContext());
         //setUpDatabase();
@@ -264,21 +267,21 @@ public class Chart extends ActionBarActivity {
     public String getDayLabel(int d){
         switch(d){
             case 0:
-                return "Su";
+                return "Not a day";
             case 1:
-                return "M";
-            case 2:
-                return "Tu";
-            case 3:
-                return "W";
-            case 4:
                 return "Th";
-            case 5:
-                return "F";
-            case 6:
+            case 2:
+                return "M";
+            case 3:
                 return "Sa";
-            case 7:
+            case 4:
                 return "Su";
+            case 5:
+                return "M";
+            case 6:
+                return "Tu";
+            case 7:
+                return "W";
             default:
                 return "Not a day";
         }

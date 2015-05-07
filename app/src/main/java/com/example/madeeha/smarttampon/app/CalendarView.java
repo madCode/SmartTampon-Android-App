@@ -56,6 +56,7 @@ public class CalendarView extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar_view);
 
+//        getActionBar().hide();
 
 
         db = new FlowDatabase(getApplicationContext());
