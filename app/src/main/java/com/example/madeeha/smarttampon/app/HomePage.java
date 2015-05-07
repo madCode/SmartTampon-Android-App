@@ -59,7 +59,7 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
 
     private RFduinoService rfduinoService;
 
-    private Button enableBluetoothButton;
+    private Button newTampon;
     private TextView scanStatusText;
     private Button scanButton;
     private TextView deviceInfoText;
@@ -83,23 +83,19 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
         b = (Button) findViewById(R.id.button);
         b.setOnClickListener(this);
 
-        startB = (Button) this.findViewById(R.id.newtamponbutton);
-        startB.setOnClickListener(this);
-        text = (TextView) this.findViewById(R.id.timer_font);
-        countDownTimer = new MyCountDownTimer(startTime, interval);
-        text.setText(text.getText() + String.valueOf(startTime / 1000));
-
-
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Bluetooth
-        enableBluetoothButton = (Button) findViewById(R.id.enableBluetooth);
-        enableBluetoothButton.setOnClickListener(new View.OnClickListener() {
+        newTampon = (Button) findViewById(R.id.newtamponbutton);
+        newTampon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                enableBluetoothButton.setEnabled(false);
-                enableBluetoothButton.setText(
+                newTampon.setEnabled(false);
+                newTampon.setText(
                         bluetoothAdapter.enable() ? "Enabling bluetooth..." : "Enable failed!");
+                text = (TextView)findViewById(R.id.timer_font);
+                countDownTimer = new MyCountDownTimer(startTime, interval);
+                text.setText(text.getText() + String.valueOf(startTime / 1000));
             }
         });
 
@@ -340,8 +336,8 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
     private void updateUi() {
         // Enable Bluetooth
         boolean on = state > STATE_BLUETOOTH_OFF;
-        enableBluetoothButton.setEnabled(!on);
-        enableBluetoothButton.setText(on ? "Bluetooth enabled" : "Enable Bluetooth");
+        newTampon.setEnabled(!on);
+        newTampon.setText(on ? "Bluetooth enabled" : "Enable Bluetooth");
         scanButton.setEnabled(on);
 
         // Scan
