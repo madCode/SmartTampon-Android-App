@@ -91,15 +91,18 @@ public class madeehaDate {
     }
 
     private int setDayOfWeek() {
-        int[] months = {-1, 0, 3, 3, 6, 1, 4, 6, 2, 5, 0, 3, 5};
-
-        int a = getCenturyCode(year);
-        int b = year % 100;//last two digits of year
-        int c = (int) Math.floor(year / 4);
-        int d = months[month];
-        int e = a + b + c + d;
-        int f = e % 7;
-        return f;
+        Calendar c = Calendar.getInstance();
+        c.set(this.year,this.month,this.date);
+        return c.get(Calendar.DAY_OF_WEEK);
+//        int[] months = {-1, 0, 3, 3, 6, 1, 4, 6, 2, 5, 0, 3, 5};
+//
+//        int a = getCenturyCode(year);
+//        int b = year % 100;//last two digits of year
+//        int c = (int) Math.floor(year / 4);
+//        int d = months[month];
+//        int e = a + b + c + d;
+//        int f = e % 7;
+//        return f;
 
         //from http://java.dzone.com/articles/algorithm-week-how-determine
     }

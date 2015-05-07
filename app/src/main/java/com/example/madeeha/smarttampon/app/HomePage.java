@@ -114,4 +114,5 @@ public class HomePage extends ActionBarActivity implements OnClickListener {
         Intent intent = new Intent(this, CalendarView.class);
         startActivity(intent);
     }
+
 }

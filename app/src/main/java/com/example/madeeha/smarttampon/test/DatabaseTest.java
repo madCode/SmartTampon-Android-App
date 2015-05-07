@@ -35,7 +35,7 @@ public class DatabaseTest extends AndroidTestCase {
         ids[1] = 20010507;
 
         Day three = new Day(2015,3,31);
-        three.setTimeFull(Time.valueOf("05:00:00"));
+//        three.setTimeFull(Time.valueOf("05:00:00"));
         three.setFertile(true);
         ids[3] = 20150331;
 
@@ -43,7 +43,7 @@ public class DatabaseTest extends AndroidTestCase {
         ids[2] = 20071220;
 
         one.setOnPeriod(2);
-        two.setTimeFull(new Time((long)30030));
+//        two.setTimeFull(new Time((long)30030));
         two.setOnPeriod(2);
         four.setOnPeriod(true);
         four.setFertile(true);
@@ -80,8 +80,8 @@ public class DatabaseTest extends AndroidTestCase {
 
         assertNotNull(d2);
         assertEquals(id,d2.getDBkey());
-        assertEquals(Time.valueOf("05:00:00"),d2.getTimeFull());
-        assertEquals(Time.valueOf("05:00:00").getTime(),d2.getTimeFullLong());
+//        assertEquals(Time.valueOf("05:00:00"),d2.getTimeFull());
+//        assertEquals(Time.valueOf("05:00:00").getTime(),d2.getTimeFullLong());
         assertEquals(true,d2.isFertile());
         assertEquals(1,d2.isFertileInt());
         assertEquals(false,d2.isOnPeriod());
