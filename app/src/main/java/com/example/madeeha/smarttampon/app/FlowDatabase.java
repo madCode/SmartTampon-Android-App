@@ -150,10 +150,10 @@ public class FlowDatabase extends SQLiteOpenHelper {
             int month=Integer.parseInt(cursor.getString(0).substring(4,6));
             int day=Integer.parseInt(cursor.getString(0).substring(6,8));
             newDay = new Day(year,month,day);
-            newDay.numTimesFilled = Integer.parseInt(cursor.getString(4));
+            newDay.numTimesFilled = Integer.parseInt(cursor.getString(3));
             newDay.fillTime = Integer.parseInt(cursor.getString(2));
             newDay.startTime = Integer.parseInt(cursor.getString(1));
-            newDay.totalFillTime = Integer.parseInt(cursor.getString(3));
+            newDay.totalFillTime = Integer.parseInt(cursor.getString(4));
 
             newDay.setOnPeriod(Integer.parseInt(cursor.getString(5)));
             newDay.setFertile(Integer.parseInt(cursor.getString(6)));
@@ -292,10 +292,10 @@ public class FlowDatabase extends SQLiteOpenHelper {
                     int month=Integer.parseInt(cursor.getString(0).substring(4,6));
                     int day=Integer.parseInt(cursor.getString(0).substring(6,8));
                     newDay = new Day(year,month,day);
-                    newDay.numTimesFilled = Integer.parseInt(cursor.getString(4));
+                    newDay.numTimesFilled = Integer.parseInt(cursor.getString(3));
                     newDay.fillTime = Integer.parseInt(cursor.getString(2));
                     newDay.startTime = Integer.parseInt(cursor.getString(1));
-                    newDay.totalFillTime = Integer.parseInt(cursor.getString(3));
+                    newDay.totalFillTime = Integer.parseInt(cursor.getString(4));
 
                     newDay.setOnPeriod(Integer.parseInt(cursor.getString(5)));
                     newDay.setFertile(Integer.parseInt(cursor.getString(6)));
