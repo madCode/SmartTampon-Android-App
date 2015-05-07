@@ -15,16 +15,15 @@ import android.graphics.Typeface;
 import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.view.View.OnClickListener;
 import android.os.CountDownTimer;
+import android.widget.Toast;
 
 import com.example.madeeha.smarttampon.R;
 
@@ -41,8 +40,8 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
     private final long startTime = 2880 * 1000;
     private final long interval = 1 * 1000;
     private long AvgTime;
-    
-    //BLUETOOTH STUFF
+
+
     // State machine
     final private static int STATE_BLUETOOTH_OFF = 1;
     final private static int STATE_DISCONNECTED = 2;
@@ -59,17 +58,62 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
 
     private RFduinoService rfduinoService;
 
-    private Button newTampon;
-    private TextView scanStatusText;
     private Button scanButton;
-    private TextView deviceInfoText;
     private TextView connectionStatusText;
-    private Button connectButton;
-    private EditData valueEdit;
-    private Button sendZeroButton;
-    private Button sendValueButton;
-    private Button clearButton;
     private LinearLayout dataLayout;
+
+    private final BroadcastReceiver bluetoothStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
+            if (state == BluetoothAdapter.STATE_ON) {
+                upgradeState(STATE_DISCONNECTED);
+            } else if (state == BluetoothAdapter.STATE_OFF) {
+                downgradeState(STATE_BLUETOOTH_OFF);
+            }
+        }
+    };
+
+    private final BroadcastReceiver scanModeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            scanning = (bluetoothAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_NONE);
+            scanStarted &= scanning;
+            updateUi();
+        }
+    };
+
+    private final ServiceConnection rfduinoServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            rfduinoService = ((RFduinoService.LocalBinder) service).getService();
+            if (rfduinoService.initialize()) {
+                if (rfduinoService.connect(bluetoothDevice.getAddress())) {
+                    upgradeState(STATE_CONNECTING);
+                }
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            rfduinoService = null;
+            downgradeState(STATE_DISCONNECTED);
+        }
+    };
+
+    private final BroadcastReceiver rfduinoReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (RFduinoService.ACTION_CONNECTED.equals(action)) {
+                upgradeState(STATE_CONNECTED);
+            } else if (RFduinoService.ACTION_DISCONNECTED.equals(action)) {
+                downgradeState(STATE_DISCONNECTED);
+            } else if (RFduinoService.ACTION_DATA_AVAILABLE.equals(action)) {
+                addData(intent.getByteArrayExtra(RFduinoService.EXTRA_DATA));
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,27 +129,15 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        // Bluetooth
-        newTampon = (Button) findViewById(R.id.newtamponbutton);
-        newTampon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                newTampon.setEnabled(false);
-                newTampon.setText(
-                        bluetoothAdapter.enable() ? "Enabling bluetooth..." : "Enable failed!");
-                text = (TextView)findViewById(R.id.timer_font);
-                countDownTimer = new MyCountDownTimer(startTime, interval);
-                text.setText(text.getText() + String.valueOf(startTime / 1000));
-            }
-        });
-
         // Find Device
-        scanStatusText = (TextView) findViewById(R.id.scanStatus);
-
-        scanButton = (Button) findViewById(R.id.scan);
+        scanButton = (Button) this.findViewById(R.id.newtamponbutton);
+        connectionStatusText = (TextView) findViewById(R.id.connectionStatus);
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                text = (TextView) findViewById(R.id.timer_font);
+                countDownTimer = new MyCountDownTimer(startTime, interval);
+                text.setText(text.getText() + String.valueOf(startTime / 1000));
                 scanStarted = true;
                 bluetoothAdapter.startLeScan(
                         new UUID[]{ RFduinoService.UUID_SERVICE },
@@ -113,61 +145,14 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
             }
         });
 
-        // Device Info
-        deviceInfoText = (TextView) findViewById(R.id.deviceInfo);
-
-        // Connect Device
-        connectionStatusText = (TextView) findViewById(R.id.connectionStatus);
-
-        connectButton = (Button) findViewById(R.id.connect);
-        connectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.setEnabled(false);
-                connectionStatusText.setText("Connecting...");
-                Intent rfduinoIntent = new Intent(HomePage.this, RFduinoService.class);
-                bindService(rfduinoIntent, rfduinoServiceConnection, BIND_AUTO_CREATE);
-            }
-        });
-
-        // Send
-        valueEdit = (EditData) findViewById(R.id.value);
-        valueEdit.setImeOptions(EditorInfo.IME_ACTION_SEND);
-        valueEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    sendValueButton.callOnClick();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        sendZeroButton = (Button) findViewById(R.id.sendZero);
-        sendZeroButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rfduinoService.send(new byte[]{0});
-            }
-        });
-
-        sendValueButton = (Button) findViewById(R.id.sendValue);
-        sendValueButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rfduinoService.send(valueEdit.getData());
-            }
-        });
-
-        // Receive
-        clearButton = (Button) findViewById(R.id.clearData);
-        clearButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dataLayout.removeAllViews();
-            }
-        });
+//        // Receive
+//        clearButton = (Button) findViewById(R.id.clearData);
+//        clearButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                dataLayout.removeAllViews();
+//            }
+//        });
 
         dataLayout = (LinearLayout) findViewById(R.id.dataLayout);
     }
@@ -241,58 +226,10 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
         startActivity(intent);
     }
 
-    private final BroadcastReceiver bluetoothStateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
-            if (state == BluetoothAdapter.STATE_ON) {
-                upgradeState(STATE_DISCONNECTED);
-            } else if (state == BluetoothAdapter.STATE_OFF) {
-                downgradeState(STATE_BLUETOOTH_OFF);
-            }
-        }
-    };
-
-    private final BroadcastReceiver scanModeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            scanning = (bluetoothAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_NONE);
-            scanStarted &= scanning;
-            updateUi();
-        }
-    };
-
-    private final ServiceConnection rfduinoServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            rfduinoService = ((RFduinoService.LocalBinder) service).getService();
-            if (rfduinoService.initialize()) {
-                if (rfduinoService.connect(bluetoothDevice.getAddress())) {
-                    upgradeState(STATE_CONNECTING);
-                }
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            rfduinoService = null;
-            downgradeState(STATE_DISCONNECTED);
-        }
-    };
-
-    private final BroadcastReceiver rfduinoReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (RFduinoService.ACTION_CONNECTED.equals(action)) {
-                upgradeState(STATE_CONNECTED);
-            } else if (RFduinoService.ACTION_DISCONNECTED.equals(action)) {
-                downgradeState(STATE_DISCONNECTED);
-            } else if (RFduinoService.ACTION_DATA_AVAILABLE.equals(action)) {
-                addData(intent.getByteArrayExtra(RFduinoService.EXTRA_DATA));
-            }
-        }
-    };
+    public void connect(){
+        Intent rfduinoIntent = new Intent(HomePage.this, RFduinoService.class);
+        bindService(rfduinoIntent, rfduinoServiceConnection, BIND_AUTO_CREATE);
+    }
 
     @Override
     protected void onStart() {
@@ -334,41 +271,30 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
     }
 
     private void updateUi() {
-        // Enable Bluetooth
-        boolean on = state > STATE_BLUETOOTH_OFF;
-        newTampon.setEnabled(!on);
-        newTampon.setText(on ? "Bluetooth enabled" : "Enable Bluetooth");
-        scanButton.setEnabled(on);
 
         // Scan
         if (scanStarted && scanning) {
-            scanStatusText.setText("Scanning...");
-            scanButton.setText("Stop Scan");
-            scanButton.setEnabled(true);
+            Toast.makeText(getApplicationContext(), "Scanning...",
+                    Toast.LENGTH_SHORT).show();
         } else if (scanStarted) {
-            scanStatusText.setText("Scan started...");
-            scanButton.setEnabled(false);
-        } else {
-            scanStatusText.setText("");
-            scanButton.setText("Scan");
-            scanButton.setEnabled(true);
+            Toast.makeText(getApplicationContext(), "Scan Started.",
+                    Toast.LENGTH_SHORT).show();
         }
 
         // Connect
         boolean connected = false;
-        String connectionText = "Disconnected";
         if (state == STATE_CONNECTING) {
-            connectionText = "Connecting...";
+            Toast.makeText(getApplicationContext(), "Connecting...",
+                    Toast.LENGTH_SHORT).show();
+
         } else if (state == STATE_CONNECTED) {
             connected = true;
-            connectionText = "Connected";
-        }
-        connectionStatusText.setText(connectionText);
-        connectButton.setEnabled(bluetoothDevice != null && state == STATE_DISCONNECTED);
+            Toast.makeText(getApplicationContext(), "Connected.",
+                    Toast.LENGTH_SHORT).show();
 
-        // Send
-        sendZeroButton.setEnabled(connected);
-        sendValueButton.setEnabled(connected);
+        }
+//        connectionStatusText.setText(connectionText);
+        //TODO: show green light or something
     }
 
     private void addData(byte[] dataFlipped) {
@@ -380,10 +306,10 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
 
         BigInteger bi = new BigInteger(data);
         //TODO: send data to chart?
-        text1.setText(bi.toString());
-
-        dataLayout.addView(
-                view, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//        text1.setText(bi.toString());
+//
+//        dataLayout.addView(
+//                view, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
     private byte[] FlipData(byte[] data){
@@ -407,13 +333,15 @@ public class HomePage extends ActionBarActivity implements OnClickListener, Blue
     public void onLeScan(BluetoothDevice device, final int rssi, final byte[] scanRecord) {
         bluetoothAdapter.stopLeScan(this);
         bluetoothDevice = device;
+//
 
         HomePage.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                deviceInfoText.setText(
-                        BluetoothHelper.getDeviceInfoText(bluetoothDevice, rssi, scanRecord));
+//                deviceInfoText.setText(
+//                        BluetoothHelper.getDeviceInfoText(bluetoothDevice, rssi, scanRecord));
                 updateUi();
+                connect();
             }
         });
     }

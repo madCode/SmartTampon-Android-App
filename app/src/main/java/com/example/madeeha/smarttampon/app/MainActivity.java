@@ -108,25 +108,15 @@ public class MainActivity extends Activity implements BluetoothAdapter.LeScanCal
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_layout);
+        setContentView(R.layout.activity_main);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        // Bluetooth
-        enableBluetoothButton = (Button) findViewById(R.id.enableBluetooth);
-        enableBluetoothButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                enableBluetoothButton.setEnabled(false);
-                enableBluetoothButton.setText(
-                        bluetoothAdapter.enable() ? "Enabling bluetooth..." : "Enable failed!");
-            }
-        });
 
         // Find Device
         scanStatusText = (TextView) findViewById(R.id.scanStatus);
 
         scanButton = (Button) findViewById(R.id.scan);
+        connectionStatusText = (TextView) findViewById(R.id.connectionStatus);
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -154,35 +144,35 @@ public class MainActivity extends Activity implements BluetoothAdapter.LeScanCal
             }
         });
 
-        // Send
-        valueEdit = (EditData) findViewById(R.id.value);
-        valueEdit.setImeOptions(EditorInfo.IME_ACTION_SEND);
-        valueEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    sendValueButton.callOnClick();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        sendZeroButton = (Button) findViewById(R.id.sendZero);
-        sendZeroButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rfduinoService.send(new byte[]{0});
-            }
-        });
-
-        sendValueButton = (Button) findViewById(R.id.sendValue);
-        sendValueButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rfduinoService.send(valueEdit.getData());
-            }
-        });
+//        // Send
+//        valueEdit = (EditData) findViewById(R.id.value);
+//        valueEdit.setImeOptions(EditorInfo.IME_ACTION_SEND);
+//        valueEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if (actionId == EditorInfo.IME_ACTION_SEND) {
+//                    sendValueButton.callOnClick();
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
+//
+//        sendZeroButton = (Button) findViewById(R.id.sendZero);
+//        sendZeroButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                rfduinoService.send(new byte[]{0});
+//            }
+//        });
+//
+//        sendValueButton = (Button) findViewById(R.id.sendValue);
+//        sendValueButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                rfduinoService.send(valueEdit.getData());
+//            }
+//        });
 
         // Receive
         clearButton = (Button) findViewById(R.id.clearData);
@@ -194,6 +184,12 @@ public class MainActivity extends Activity implements BluetoothAdapter.LeScanCal
         });
 
         dataLayout = (LinearLayout) findViewById(R.id.dataLayout);
+    }
+
+    public void connect(){
+        connectionStatusText.setText("Connecting...");
+        Intent rfduinoIntent = new Intent(MainActivity.this, RFduinoService.class);
+        bindService(rfduinoIntent, rfduinoServiceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -238,8 +234,6 @@ public class MainActivity extends Activity implements BluetoothAdapter.LeScanCal
     private void updateUi() {
         // Enable Bluetooth
         boolean on = state > STATE_BLUETOOTH_OFF;
-        enableBluetoothButton.setEnabled(!on);
-        enableBluetoothButton.setText(on ? "Bluetooth enabled" : "Enable Bluetooth");
         scanButton.setEnabled(on);
 
         // Scan
@@ -268,9 +262,9 @@ public class MainActivity extends Activity implements BluetoothAdapter.LeScanCal
         connectionStatusText.setText(connectionText);
         connectButton.setEnabled(bluetoothDevice != null && state == STATE_DISCONNECTED);
 
-        // Send
-        sendZeroButton.setEnabled(connected);
-        sendValueButton.setEnabled(connected);
+//        // Send
+//        sendZeroButton.setEnabled(connected);
+//        sendValueButton.setEnabled(connected);
     }
 
     private void addData(byte[] dataFlipped) {
@@ -309,13 +303,15 @@ public class MainActivity extends Activity implements BluetoothAdapter.LeScanCal
     public void onLeScan(BluetoothDevice device, final int rssi, final byte[] scanRecord) {
         bluetoothAdapter.stopLeScan(this);
         bluetoothDevice = device;
+//
 
         MainActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                deviceInfoText.setText(
-                        BluetoothHelper.getDeviceInfoText(bluetoothDevice, rssi, scanRecord));
+//                deviceInfoText.setText(
+//                        BluetoothHelper.getDeviceInfoText(bluetoothDevice, rssi, scanRecord));
                 updateUi();
+                connect();
             }
         });
     }
