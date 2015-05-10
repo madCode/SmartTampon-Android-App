@@ -18,7 +18,7 @@
         android:textColor="@color/periodRed"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="67dp" />
+        android:layout_marginTop="100dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -27,7 +27,7 @@
         android:textColor="@color/white"
         android:textSize="15sp"
         android:gravity="center"
-        android:layout_marginTop="122dp"
+        android:layout_marginTop="180dp"
         android:layout_centerHorizontal="true" />
 
     <Button
@@ -35,7 +35,7 @@
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_marginLeft="40dp"
-        android:layout_marginTop="280dp"
+        android:layout_marginTop="320dp"
         android:onClick="gotoCalendarPage"
         android:background="@drawable/calendarbuttonhome" />
 
@@ -44,7 +44,7 @@
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_marginLeft="230dp"
-        android:layout_marginTop="280dp"
+        android:layout_marginTop="320dp"
         android:background="@drawable/statsbuttonhome"
         android:onClick="gotoChart"/>
 
@@ -113,7 +113,7 @@
             android:text=""
             android:id="@+id/button"
             android:layout_gravity="right"
-            android:background="@drawable/notificationbutton"
+            android:background="@android:color/transparent"
             android:layout_above="@+id/scrollView"
             android:layout_centerHorizontal="true" />
 

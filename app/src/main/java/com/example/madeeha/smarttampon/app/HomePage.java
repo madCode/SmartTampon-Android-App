@@ -191,6 +191,7 @@ public class HomePage extends Activity implements OnClickListener, BluetoothAdap
                     .setSmallIcon(R.drawable.calendarbutton)
                     .setContentIntent(pIntent).build();
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            noti.flags |= Notification.FLAG_AUTO_CANCEL;
             notificationManager.notify(0, noti);
         }
 
@@ -347,14 +348,30 @@ public class HomePage extends Activity implements OnClickListener, BluetoothAdap
         timerHasStarted = false;
         newTime = savedTime;
         startTime = newTime;
-        today.totalFillTime+= TimeUnit.MILLISECONDS.toHours(newTime);
-        today.numTimesFilled+=1;
+        today.totalFillTime += TimeUnit.MILLISECONDS.toHours(newTime);
+        today.numTimesFilled += 1;
 
         if (db.getDay(today.getDBkey()) != null) {
             db.updateDay(today);
         } else {
             db.addDay(today);
         }
+
+        //Notification
+        Intent intent = new Intent();
+        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        Notification noti = new Notification.Builder(this)
+                .setTicker("Your tampon is full!")
+                .setContentTitle("my.Flow")
+                .setContentText("Your tampon is full! Time to change your tampon!")
+                .setSmallIcon(R.drawable.calendarbutton)
+                .setContentIntent(pIntent).build();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        noti.flags |= Notification.FLAG_AUTO_CANCEL;
+        notificationManager.notify(0, noti);
+
+    }
+
 //        byte[] data = FlipData(dataFlipped);
 //        View view = getLayoutInflater().inflate(android.R.layout.simple_list_item_2, dataLayout, false);
 //
@@ -366,7 +383,7 @@ public class HomePage extends Activity implements OnClickListener, BluetoothAdap
 //
 //        dataLayout.addView(
 //                view, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-    }
+
 
     private byte[] FlipData(byte[] data){
         int len = data.length;
